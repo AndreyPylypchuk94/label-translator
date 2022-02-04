@@ -44,7 +44,7 @@ public class DataProvider {
         HSSFSheet sheet = workbook.getSheet("Товары");
         int physicalNumberOfRows = sheet.getPhysicalNumberOfRows();
 
-        for (int i = 1; i < physicalNumberOfRows; i++) {
+        for (int i = 0; i < physicalNumberOfRows; i++) {
             log.info("Reading {} row from {} rows", i, physicalNumberOfRows);
             HSSFRow row = sheet.getRow(i);
             result.add(row.getCell(1).getStringCellValue());
@@ -61,11 +61,11 @@ public class DataProvider {
         HSSFSheet sheet = workbook.getSheet("Товары");
         int physicalNumberOfRows = sheet.getPhysicalNumberOfRows();
 
-        for (int i = 1; i < physicalNumberOfRows; i++) {
+        for (int i = 0; i < physicalNumberOfRows; i++) {
             log.info("Writing {} row from {} rows", i, physicalNumberOfRows);
             HSSFRow row = sheet.getRow(i);
-            put(row, 1, 5, 7);
-            put(row, 2, 6, 8);
+            put(row, 1, 3, 5);
+            put(row, 2, 4, 6);
         }
         stream.close();
         OutputStream outputStream = newOutputStream(file);

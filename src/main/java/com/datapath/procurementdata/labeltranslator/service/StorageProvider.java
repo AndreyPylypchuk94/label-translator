@@ -32,13 +32,13 @@ public class StorageProvider {
 
     public void persist(Set<String> words) throws JsonProcessingException {
         int i = 1;
-        for (String w : words)
+        for (String w : words) {
+            log.info("Saving '{}' ({} from {})", w, i, words.size());
             if (!template.exists(new Query(where("_id").is(w)), COLLECTION_NAME)) {
-                log.info("Saving '{}' ({} from {})", w, i, words.size());
                 template.save(mapper.writeValueAsString(new TranslateData(w)), COLLECTION_NAME);
-                i++;
             }
-
+            i++;
+        }
     }
 
     public List<TranslateData> getNotTranslated(int limit) throws JsonProcessingException {
