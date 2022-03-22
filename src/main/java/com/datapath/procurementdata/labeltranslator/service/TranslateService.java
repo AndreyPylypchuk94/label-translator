@@ -35,7 +35,7 @@ public class TranslateService {
 
         data.forEach(d -> {
             log.info("Translating '{}' word", d);
-            Translation translate = this.translate.translate(d, sourceLanguage("uk"), targetLanguage("la"), model("base"));
+            Translation translate = this.translate.translate(d, sourceLanguage("pl"), targetLanguage("uk"), model("base"));
             result.put(d, translate.getTranslatedText());
         });
 

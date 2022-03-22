@@ -40,7 +40,11 @@ public class DataProvider {
         for (int i = 0; i < physicalNumberOfRows; i++) {
             log.info("Reading {} row from {} rows", i, physicalNumberOfRows);
             HSSFRow row = sheet.getRow(i);
-            result.add(row.getCell(0).getStringCellValue().trim());
+            String value = row.getCell(0).getStringCellValue().trim();
+
+            if (value.startsWith("ocds-")) continue;
+
+            result.add(value);
         }
         stream.close();
         return result;
