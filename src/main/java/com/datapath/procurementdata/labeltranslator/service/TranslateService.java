@@ -1,7 +1,6 @@
 package com.datapath.procurementdata.labeltranslator.service;
 
 import com.datapath.procurementdata.labeltranslator.domain.TranslateData;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.translate.Translate;
 import com.google.cloud.translate.TranslateOptions;
@@ -34,17 +33,15 @@ public class TranslateService {
         this.translate = TranslateOptions.newBuilder().setCredentials(credentials).build().getService();
     }
 
-    public void translate() throws JsonProcessingException {
+    public void translate() {
         List<TranslateData> notTranslated;
         do {
             notTranslated = storageProvider.getNotTranslated(100);
             if (isEmpty(notTranslated)) break;
             notTranslated.forEach(w -> {
                 log.info("Translating '{}' word", w.getRu());
-                Translation translationUA = translate.translate(w.getRu(), sourceLanguage("ru"), targetLanguage("uk"), model("base"));
-                Translation translationEN = translate.translate(w.getRu(), sourceLanguage("ru"), targetLanguage("en"), model("base"));
-                w.setUa(translationUA.getTranslatedText());
-                w.setEn(translationEN.getTranslatedText());
+                Translation translationPL = translate.translate(w.getRu(), sourceLanguage("ru"), targetLanguage("pl"), model("base"));
+                w.setPl(translationPL.getTranslatedText());
                 w.setTranslated(true);
                 storageProvider.save(w);
             });

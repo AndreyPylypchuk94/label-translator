@@ -21,6 +21,7 @@ public class DataTokenizer {
                 .flatMap(d -> stream(d.split(", ")))
                 .filter(w -> PATTERN.matcher(w).find())
                 .filter(w -> !w.matches("^[А-Я]+$"))
+                .map(String::trim)
                 .collect(toSet());
     }
 

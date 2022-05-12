@@ -41,14 +41,14 @@ public class DataProvider {
 
         InputStream stream = newInputStream(of(FILE_PATH));
         HSSFWorkbook workbook = new HSSFWorkbook(stream);
-        HSSFSheet sheet = workbook.getSheet("Товары");
+        HSSFSheet sheet = workbook.getSheetAt(0);
         int physicalNumberOfRows = sheet.getPhysicalNumberOfRows();
 
         for (int i = 0; i < physicalNumberOfRows; i++) {
             log.info("Reading {} row from {} rows", i, physicalNumberOfRows);
             HSSFRow row = sheet.getRow(i);
+            result.add(row.getCell(0).getStringCellValue());
             result.add(row.getCell(1).getStringCellValue());
-            result.add(row.getCell(2).getStringCellValue());
         }
         stream.close();
         return result;
@@ -58,14 +58,14 @@ public class DataProvider {
         Path file = of(FILE_PATH);
         InputStream stream = newInputStream(file);
         HSSFWorkbook workbook = new HSSFWorkbook(stream);
-        HSSFSheet sheet = workbook.getSheet("Товары");
+        HSSFSheet sheet = workbook.getSheetAt(0);
         int physicalNumberOfRows = sheet.getPhysicalNumberOfRows();
 
         for (int i = 0; i < physicalNumberOfRows; i++) {
             log.info("Writing {} row from {} rows", i, physicalNumberOfRows);
             HSSFRow row = sheet.getRow(i);
-            put(row, 1, 3, 5);
-            put(row, 2, 4, 6);
+            put(row, 0, 2 );
+            put(row, 1, 3);
         }
         stream.close();
         OutputStream outputStream = newOutputStream(file);
@@ -73,36 +73,31 @@ public class DataProvider {
         outputStream.close();
     }
 
-    private void put(HSSFRow row, int sourceIdx, int uaIdx, int enIdx) {
+    private void put(HSSFRow row, int sourceIdx, int plIdx) {
         String text = row.getCell(sourceIdx).getStringCellValue();
         List<String> words = tokenizer.tokenize(text);
 
-        List<String> uaWords = new LinkedList<>();
-        List<String> enWords = new LinkedList<>();
+        List<String> plWords = new LinkedList<>();
 
         words.forEach(w -> {
             TranslateData wordTranslate = get(w);
 
             if (isNull(wordTranslate)) {
-                uaWords.add(w);
-                enWords.add(w);
+                plWords.add(w);
             } else {
-                uaWords.add(wordTranslate.getUa() == null ? w : wordTranslate.getUa());
-                enWords.add(wordTranslate.getEn() == null ? w : wordTranslate.getEn());
+                plWords.add(wordTranslate.getPl() == null ? w : wordTranslate.getPl());
             }
         });
 
-        HSSFCell uaCell = row.createCell(uaIdx);
-        uaCell.setCellValue(join(", ", uaWords));
-        HSSFCell enCell = row.createCell(enIdx);
-        enCell.setCellValue(join(", ", enWords));
+        HSSFCell plCell = row.createCell(plIdx);
+        plCell.setCellValue(join(", ", plWords));
     }
 
     private TranslateData get(String w) {
         TranslateData wordTranslate = translateDataByRuValue.get(w);
 
         if (isNull(wordTranslate)) {
-            wordTranslate = storageProvider.findById(w);
+            wordTranslate = storageProvider.findByIdTranslated(w);
             if (nonNull(wordTranslate)) {
                 translateDataByRuValue.put(w, wordTranslate);
             }
